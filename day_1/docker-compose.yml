@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "6000:5000"
+    environment:
+      - AWS_REGION=us-east-1
+      - DYNAMODB_TABLE=users
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - SECRET_KEY
+    secrets:
+      - aws_secrets
+    restart: always
+
+secrets:
+  aws_secrets:
+    file: ./aws_secrets.env  # Store secrets securely in a file (DO NOT COMMIT TO GIT)
