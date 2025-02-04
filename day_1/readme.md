@@ -11,13 +11,40 @@ docker run -p 6000:6000 \
 rshiva86/flask-dynamodb:1.0
 
 ```
+
 - AWS Key and Secrets are stored aws secret manager
 - Create a dynamodb table with name users
 * Use Terraform to provide resources
 * Concepts Covered: Deployments, Services, Ingress, ConfigMaps, Secrets.
-* Tech Stack: Nginx (Frontend), Flask (Backend), PostgreSQL (Database).
+* Tech Stack: Gunicorn, Flask (Backend), DynamoDB (Database).
+
+Encode the AWS ACCESS ID & ACCESS KEY
+```
+echo -n "your-access-key-id" | base64
+echo -n "your-secret-access-key" | base64
+```
+
+```
+cd kubernetes 
+kubectl apply -f namespace.yaml & k apply -f .
+```
+
 * Tasks:
-    * Deploy a frontend using Nginx.
     * Deploy a Flask API with environment variables stored in ConfigMaps and Secrets.
-    * Deploy PostgreSQL with Persistent Volume.
     * Expose the services using ClusterIP and Ingress.
+    ```
+    minikube addons enable ingress
+    minikube tunnel #keep this running
+    kubectl get services -n flask-app
+
+    ```
+
+
+    ```
+    curl --location 'EXTERNAL-IP/api/user' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{"email": "sample@gmail.com",
+     "username": "sample"}'
+
+     curl --location --request GET 'http://127.0.0.1/api/user' \
+    ```
