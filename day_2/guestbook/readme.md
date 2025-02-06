@@ -20,8 +20,7 @@ eksctl create cluster --name spoke-cluster-2 --region us-east-2
 ```
 
 
-## ArgoCD setup
-Install ArgoCD on hub cluster
+### Install ArgoCD on hub cluster
 
 ```
 kubectl config get-contexts
@@ -39,6 +38,10 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 Now that we have install ArgoCD
 
 I have changed service type from ClusterIP to NodePort
+
+```
+get svc argocd-server -n argocd
+```
 
 Once that is done. Check the Port of the NodePort, go the AWS EC2(hub instance), check the security group and add the port number to inbound rules.
 Lets Login to the ArgoCD UI
@@ -88,13 +91,64 @@ kubectl get service
 
 
 
-### Secure ArgoCD 
+## Enable https ArgoCD 
 
+Install IAM Policy for AWS Load Balancer Controller
+
+```
 curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.11.0/docs/install/iam_policy.json
 
 aws iam create-policy \
 --policy-name AWSLoadBalancerControllerIAMPolicy \
 --policy-document file://iam_policy.json
+
+eksctl utils associate-iam-oidc-provider --region=us-east-2 --cluster=hub-cluster --approve
+
+```
+Create an IAM Role and Service Account
+
+```
+eksctl create iamserviceaccount \
+--cluster=hub-cluster \
+--namespace=kube-system \
+--region=us-east-2 \
+--name=aws-load-balancer-controller \
+--attach-policy-arn=arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy \
+--override-existing-serviceaccounts \
+--approve
+
+```
+Install AWS Load Balancer Controller using Helm
+
+```
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+-n kube-system \
+--set clusterName=hub-cluster \
+--set serviceAccount.create=false \
+--set serviceAccount.name=aws-load-balancer-controller
+
+```
+
+Update ArgoCD Service to Use LoadBalancer
+
+
+```sh
+kubectl edit svc argocd-server -n argocd
+```
+
+Modify the service type from `NodePort` to `LoadBalancer`
+```yaml
+spec:
+  type: LoadBalancer
+```
+
+Get the new external URL for ArgoCD
+```sh
+kubectl get svc argocd-server -n argocd
+```
 
 ### Don't forget to delete the clusters
 ```
