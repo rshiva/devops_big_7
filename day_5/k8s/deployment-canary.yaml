@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  namespace: secure-app
+  labels:
+    app: flask
+    version: canary
+  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: flask
+        version: canary
+    spec:
+      containers:
+      - name: flask
+        image: rshiva86/python-app:1.6
+        resources:
+          limits:
+            memory: "48Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 5000

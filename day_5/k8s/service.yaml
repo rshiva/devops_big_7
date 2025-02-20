@@ -6,6 +6,7 @@ metadata:
 spec:
   selector:
     app: flask
+    # version: stable
   ports:
   - port: 80
     targetPort: 5000
