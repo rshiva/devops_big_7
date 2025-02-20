@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-green
+  namespace: secure-app
+  labels:
+    app: flask
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask
+      version: green
+  template:
+    metadata:
+      labels:
+        app: flask
+        version: green
+    spec:
+      containers:
+      - name: flask-app
+        image: rshiva86/python-app:1.5
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000
