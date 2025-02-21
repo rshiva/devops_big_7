@@ -8,7 +8,7 @@ metadata:
     version: canary
   
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: flask
@@ -18,13 +18,17 @@ spec:
       labels:
         app: flask
         version: canary
+        access: allowed
     spec:
       containers:
       - name: flask
         image: rshiva86/python-app:1.6
         resources:
-          limits:
-            memory: "48Mi"
+          requests:
             cpu: "100m"
+            memory: "48Mi"
+          limits:
+            memory: "64Mi"
+            cpu: "200m"
         ports:
         - containerPort: 5000
