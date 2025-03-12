@@ -32,3 +32,20 @@ spec:
       - image: registry.k8s.io/fluentd-elasticsearch:1.20
         name: fluentd-elasticsearch
 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-access-pod
+  namespace: default
+  labels:
+    name: api-access-pod
+spec:
+  serviceAccountName: custom-service-account
+  containers:
+  - name: kubectl-container
+    image: bitnami/kubectl:latest
+    command:
+      - /bin/sh
+      - -c
+      - "while true; do kubectl get pods; sleep 10; done"

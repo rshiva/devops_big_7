@@ -1,0 +1,35 @@
+# You are tasked to create a ConfigMap and consume the ConfigMap in a pod using a volume mount.
+
+# Create a ConfigMap namedanother-config containing the key/value pair: key4/value3
+# start a pod named nginx-configmap containing a single container using the nginx image, and mount the key you just created into the pod under directory /also/a/path
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: another-config
+data:
+  key: key4
+  value: value3
+
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx-configmap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-configmap
+    volumeMounts:
+	- name: config
+          mouthPath:  /also/a/path
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  volumes:
+   - name: config
+     configMap:
+       name: another-config
+status: {}
+  

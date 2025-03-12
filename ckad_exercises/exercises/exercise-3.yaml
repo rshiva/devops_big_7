@@ -1,0 +1,37 @@
+# You are tasked to create a secret and consume the secret in a pod using environment variables as follow;
+
+# Create a secret named another-secret with a key/value pair; key1/value4
+# Start an nginx pod named nginx-secret using container image nginx, and add an environment variable exposing the value of the secret key key 1, using COOL_VARIABLE as the name for the environment variable inside the pod
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: another-secret
+data:
+  key: key1
+  value: dmFsdWU0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-secret
+  labels:
+    name: nginx-secret
+spec:
+  containers:
+  - name: nginx-secret
+    image: nginx
+    env:
+      - name: COOL_VARIABLE
+        valueFrom:
+          secretKeyRef:
+            name: another-secret
+            key: key1
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: <Port>
+

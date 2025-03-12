@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-config
+  namespace: dvl1987
+data:
+  TIME_FREQ: "10"  # Ensure value is a string
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: time-check
+  namespace: dvl1987
+  labels:
+    name: time-check
+spec:
+  containers:
+  - name: time-check
+    image: busybox
+    command:
+      - /bin/sh
+      - -c
+      - while true; do date >> /opt/time/time-check.log; sleep $TIME_FREQ; done
+    env:
+      - name: TIME_FREQ
+        valueFrom:
+          configMapKeyRef:
+            name: time-config
+            key: TIME_FREQ
+    volumeMounts:
+      - name: time-check-log
+        mountPath: /opt/time
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  volumes:
+    - name: time-check-log
+      emptyDir: {}  # Ephemeral storage that lasts as long as the pod

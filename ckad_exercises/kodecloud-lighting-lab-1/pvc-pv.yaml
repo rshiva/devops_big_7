@@ -1,0 +1,67 @@
+# Create a Persistent Volume called log-volume. It should make use of a storage class name manual. It should use RWX as the access mode and have a size of 1Gi. The volume should use the hostPath /opt/volume/nginx
+
+# Next, create a PVC called log-claim requesting a minimum of 200Mi of storage. This PVC should bind to log-volume.
+
+# Mount this in a pod called logger at the location /var/www/nginx. This pod should use the image nginx:alpine.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: log-volume
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  hostPath: 
+    path: /opt/volume/nginx
+  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: log-claim
+spec:
+  resources:
+    requests:
+      storage: 200Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+
+
+---
+apiVersion: v1
+kind: StorageClass
+metadata: 
+  name: manual
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: logger
+  labels:
+    name: logger
+spec:
+  containers:
+  - name: logger
+    image: nginx:alpine
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    volumeMounts: 
+    - mountPath: "/var/www/nginx"
+      name: log-vol
+  volumes:
+    - name: log-vol
+      persistentVolumeClaim: 
+        claimName: log-claim

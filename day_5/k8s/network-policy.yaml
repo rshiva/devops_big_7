@@ -17,6 +17,6 @@ spec:
       - namespaceSelector:
           matchLabels:
             name: monitoring
-      - podSelector: # Add this rule
+      - podSelector: 
           matchLabels:
-            name: prometheus
+            app.kubernetes.io/name: prometheus

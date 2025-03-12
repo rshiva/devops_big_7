@@ -1,0 +1,53 @@
+# <!-- Create a redis deployment with the following parameters:
+
+# Name of the deployment should be redis using the redis:alpine image. It should have exactly 1 replica.
+
+# The container should request for .2 CPU. It should use the label app=redis.
+
+# It should mount exactly 2 volumes.
+
+# a. An Empty directory volume called data at path /redis-master-data.
+
+# b. A configmap volume called redis-config at path /redis-master.
+
+# c. The container should expose the port 6379.
+
+
+# The configmap has already been created.
+
+# Deployment created correctly? -->
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine  # Fixed image name
+        resources:
+          requests:
+            cpu: "0.2"  # Fixed indentation and syntax
+        ports:
+        - containerPort: 6379  # Corrected port placeholder
+        volumeMounts:
+        - name: data
+          mountPath: /redis-master-data
+        - name: redis-config
+          mountPath: /redis-master
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: redis-config
+        configMap:
+          name: redis-config  # Assumes ConfigMap is already created
