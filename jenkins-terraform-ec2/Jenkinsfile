@@ -9,7 +9,7 @@ pipeline{
             steps{
                 withCredentials([file(credentialsId: 'aws-oidc-token', variable: 'AWS_OIDC_TOKEN')]){
                     sh '''
-                        # Verify AWS identity keylessly
+                        # Verify AWS identity keylessly 
                         aws sts get-caller-identity
 
                         # Run Terraform
