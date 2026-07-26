@@ -1,6 +1,24 @@
 pipeline{
     agent any
+    environment {
+        AWS_ROLE_ARN = 'arn:aws:iam::640565834670:role/JenkinsTerraform'
+        AWS_DEFAULT_REGIOM = "us-east-1"
+    }
     stages{
+        stage('Terraform Deploy'){
+            steps{
+                withCredentials([file(credentialsId: 'aws-oidc-token', variable: 'AWS_WEB_IDENTITY_TOKEN_FILE')]){
+                    sh '''
+                        # Verify AWS identity keylessly
+                        aws sts get-caller-identity
+
+                        # Run Terraform
+                        terraform init
+                        terraform plan
+                    '''
+                }
+            }
+        }
         stage('Build'){
             steps{
                 sh 'echo building....'
