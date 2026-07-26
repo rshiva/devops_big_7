@@ -1,11 +1,13 @@
-pipeline{
+pipeline {
     agent any
+
     environment {
         AWS_ROLE_ARN = 'arn:aws:iam::640565834670:role/JenkinsTerraform'
-        AWS_DEFAULT_REGIOM = "us-east-1"
+        AWS_DEFAULT_REGION = "us-east-1"
     }
-    stages{
-        stage('Terraform Deploy'){
+
+    stages {
+        stage('Terraform Deploy') {
             steps {
                 // Bind the OIDC token string to AWS_OIDC_TOKEN variable
                 withCredentials([string(credentialsId: 'aws-oidc-token', variable: 'AWS_OIDC_TOKEN')]) {
@@ -23,13 +25,16 @@ pipeline{
                     '''
                 }
             }
-        stage('Build'){
-            steps{
+        } // <--- Missing closing brace for "Terraform Deploy" stage was added here
+
+        stage('Build') {
+            steps {
                 sh 'echo building....'
             }
         }
-        stage('Test'){
-            steps{
+
+        stage('Test') {
+            steps {
                 sh 'echo testing'
             }
         }
