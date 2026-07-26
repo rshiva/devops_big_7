@@ -17,7 +17,7 @@ pipeline {
                         echo "$AWS_OIDC_TOKEN" > "$AWS_WEB_IDENTITY_TOKEN_FILE"
 
                         # Verify AWS identity keylessly
-                        aws sts get-caller-identity
+                        // aws sts get-caller-identity
 
                         # Run Terraform
                         terraform init
