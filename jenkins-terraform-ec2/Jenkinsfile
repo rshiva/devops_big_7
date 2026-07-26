@@ -6,19 +6,23 @@ pipeline{
     }
     stages{
         stage('Terraform Deploy'){
-            steps{
-                withCredentials([file(credentialsId: 'aws-oidc-token', variable: 'AWS_OIDC_TOKEN')]){
+            steps {
+                // Bind the OIDC token string to AWS_OIDC_TOKEN variable
+                withCredentials([string(credentialsId: 'aws-oidc-token', variable: 'AWS_OIDC_TOKEN')]) {
                     sh '''
-                        # Verify AWS identity keylessly 
+                        # Save the token string to a temporary file
+                        export AWS_WEB_IDENTITY_TOKEN_FILE="$WORKSPACE_TMP/jwt_token"
+                        echo "$AWS_OIDC_TOKEN" > "$AWS_WEB_IDENTITY_TOKEN_FILE"
+
+                        # Verify AWS identity keylessly
                         aws sts get-caller-identity
 
                         # Run Terraform
                         terraform init
-                        terraform plan
+                        terraform apply -auto-approve
                     '''
                 }
             }
-        }
         stage('Build'){
             steps{
                 sh 'echo building....'
