@@ -7,7 +7,7 @@ pipeline{
     stages{
         stage('Terraform Deploy'){
             steps{
-                withCredentials([file(credentialsId: 'aws-oidc-token', variable: 'AWS_WEB_IDENTITY_TOKEN_FILE')]){
+                withCredentials([file(credentialsId: 'aws-oidc-token', variable: 'AWS_OIDC_TOKEN')]){
                     sh '''
                         # Verify AWS identity keylessly
                         aws sts get-caller-identity
