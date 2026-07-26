@@ -18,6 +18,7 @@ pipeline {
 
                         # Verify AWS identity keylessly
                         # aws sts get-caller-identity
+                        cd jenkins-terraform-ec2
 
                         # Run Terraform
                         terraform init
