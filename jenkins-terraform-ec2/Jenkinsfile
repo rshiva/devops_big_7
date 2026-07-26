@@ -16,8 +16,7 @@ pipeline {
                         export AWS_WEB_IDENTITY_TOKEN_FILE="$WORKSPACE_TMP/jwt_token"
                         echo "$AWS_OIDC_TOKEN" > "$AWS_WEB_IDENTITY_TOKEN_FILE"
 
-                        # Verify AWS identity keylessly
-                        # aws sts get-caller-identity
+                        
                         cd jenkins-terraform-ec2
 
                         # Run Terraform
